@@ -1,0 +1,462 @@
+/*
+Ruiz Godoy Franco
+Práctica 2
+317139019
+*/
+
+#include<iostream>
+
+//#define GLEW_STATIC
+
+#include <GL/glew.h>
+
+#include <GLFW/glfw3.h>
+
+// Shaders
+#include "Shader.h"
+
+void resize(GLFWwindow* window, int width, int height);
+
+const GLint WIDTH = 800, HEIGHT = 600;
+
+
+int main() {
+	glfwInit();
+	//Verificaci�n de compatibilidad 
+	/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);*/
+
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "Practica 2 - Franco Ruiz", NULL, NULL);
+	glfwSetFramebufferSizeCallback(window, resize);
+	
+	//Verificaci�n de errores de creacion  ventana
+	if (window== NULL) 
+	{
+		std::cout << "Failed to create GLFW window" << std::endl;
+		glfwTerminate();
+
+		return EXIT_FAILURE;
+	}
+
+	glfwMakeContextCurrent(window);
+	glewExperimental = GL_TRUE;
+
+	//Verificaci�n de errores de inicializaci�n de glew
+
+	if (GLEW_OK != glewInit()) {
+		std::cout << "Failed to initialise GLEW" << std::endl;
+		return EXIT_FAILURE;
+	}
+
+	// Imprimimos informacin de OpenGL del sistema
+	std::cout << "> Version: " << glGetString(GL_VERSION) << std::endl;
+	std::cout << "> Vendor: " << glGetString(GL_VENDOR) << std::endl;
+	std::cout << "> Renderer: " << glGetString(GL_RENDERER) << std::endl;
+	std::cout << "> SL Version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << std::endl;
+
+
+	// Define las dimensiones del viewport
+	//glViewport(0, 0, screenWidth, screenHeight);
+
+    Shader ourShader("Shader/core.vs", "Shader/core.frag");
+
+	// Set up vertex data (and buffer(s)) and attribute pointers
+	float vertices[] = {
+		//Bordes Negros
+		-0.1f,  1.0f, 0.0f,    0.0f,0.0f,0.0f,  //A
+		0.1f, 1.0f, 0.0f,   0.0f,0.0f,0.0f, //C
+		0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+
+		-0.1f,  1.0f, 0.0f,    0.0f,0.0f,0.0f,  //A
+		-0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f,  //B
+		0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+
+		//Derecho
+		0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+		0.2f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //G
+		0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+
+		0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+		0.1f,  0.9f, 0.0f,    0.0f,0.0f,0.0f,  //E
+		0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+
+		0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+		0.25f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //H
+		0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+
+		0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+		0.2f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //J
+		0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+
+		0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+		0.3f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //K
+		0.25f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //M
+		0.25f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //M
+		0.3f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //K
+		0.3f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //L
+
+		0.3f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //L
+		0.35f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //P
+		0.3f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //N
+
+		0.35f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //P
+		0.3f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //N
+		0.35f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //O
+//
+		0.35f, 0.55f, 0.0f,    0.0f,0.0f,0.0f, //E2
+		0.35f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //H2
+		0.45f, 0.55f, 0.0f,    0.0f,0.0f,0.0f, //F2
+
+		0.45f, 0.55f, 0.0f,    0.0f,0.0f,0.0f, //F2
+		0.35f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //H2
+		0.45f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //G2
+
+		0.45f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //G2
+		0.5f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //M2
+		0.45f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //N2
+
+		0.5f, 0.5f, 0.0f,    0.0f,0.0f,0.0f, //M2
+		0.45f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //N2
+		0.5f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //J2
+
+		0.35f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //I2
+		0.35f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //L2
+		0.5f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //J2
+
+		0.5f, 0.4f, 0.0f,    0.0f,0.0f,0.0f, //J2
+		0.35f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //L2
+		0.5f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //K2
+
+		0.4f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //O2
+		0.45f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //R2
+		0.4f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //T2
+
+		0.4f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //T2
+		0.45f, 0.35f, 0.0f,    0.0f,0.0f,0.0f, //R2
+		0.45f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //S2
+
+		0.35f, 0.05f, 0.0f,    0.0f,0.0f,0.0f, //U2
+		0.4f, 0.05f, 0.0f,    0.0f,0.0f,0.0f, //V2
+		0.35f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //W2
+
+		0.4f, 0.05f, 0.0f,    0.0f,0.0f,0.0f, //V2
+		0.35f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //W2
+		0.4f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //T2
+
+		0.45f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //S2
+		0.5f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //Z2
+		0.45f, -0.1f, 0.0f,    0.0f,0.0f,0.0f, //B3
+
+		0.5f, 0.0f, 0.0f,    0.0f,0.0f,0.0f, //Z2
+		0.45f, -0.1f, 0.0f,    0.0f,0.0f,0.0f, //B3
+		0.5f, -0.1f, 0.0f,    0.0f,0.0f,0.0f, //A3
+
+		0.35f, -0.2f, 0.0f,    0.0f,0.0f,0.0f, //F3
+		0.35f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //O
+		0.5f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //E3
+
+		0.35f, -0.2f, 0.0f,    0.0f,0.0f,0.0f, //F3
+		0.5f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //E3
+		0.5f, -0.2f, 0.0f,    0.0f,0.0f,0.0f, //G3
+
+		0.5f, -0.1f, 0.0f,    0.0f,0.0f,0.0f, //A3
+		0.5f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //E3
+		0.55f, -0.1f, 0.0f,    0.0f,0.0f,0.0f, //C3
+
+		0.5f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //E3
+		0.55f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //C3
+		0.55f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //D3
+
+
+		//IZQUIERDO
+		-0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+		-0.2f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //G
+		-0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+
+		-0.1f, 0.95f, 0.0f,    0.0f,0.0f,0.0f, //D
+		-0.1f,  0.9f, 0.0f,    0.0f,0.0f,0.0f,  //E
+		-0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+
+		-0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+		-0.25f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //H
+		-0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+
+		-0.2f, 0.9f, 0.0f,    0.0f,0.0f,0.0f, //F
+		-0.2f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //J
+		-0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+
+		-0.25f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //I
+		-0.3f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //K
+		-0.25f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //M
+		-0.25f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //M
+		-0.3f, 0.85f, 0.0f,    0.0f,0.0f,0.0f, //K
+		-0.3f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //L
+
+		-0.3f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //L
+		-0.35f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //P
+		-0.3f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //N
+
+		-0.35f, 0.75f, 0.0f,    0.0f,0.0f,0.0f, //P
+		-0.3f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //N
+		-0.35f, -0.25f, 0.0f,    0.0f,0.0f,0.0f, //O
+
+		//
+		-0.35f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //E2
+		-0.35f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //H2
+		-0.45f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //F2
+
+		-0.45f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //F2
+		-0.35f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //H2
+		-0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //G2
+
+		-0.45f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //G2
+		-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //M2
+		-0.45f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //N2
+
+		-0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 0.0f, //M2
+		-0.45f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //N2
+		-0.5f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //J2
+
+		-0.35f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //I2
+		-0.35f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //L2
+		-0.5f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //J2
+
+		-0.5f, 0.4f, 0.0f, 0.0f, 0.0f, 0.0f, //J2
+		-0.35f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //L2
+		-0.5f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //K2
+
+		-0.4f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //O2
+		-0.45f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //R2
+		-0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //T2
+
+		-0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //T2
+		-0.45f, 0.35f, 0.0f, 0.0f, 0.0f, 0.0f, //R2
+		-0.45f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //S2
+
+		-0.35f, 0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //U2
+		-0.4f, 0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //V2
+		-0.35f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //W2
+
+		-0.4f, 0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //V2
+		-0.35f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //W2
+		-0.4f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //T2
+
+		-0.45f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //S2
+		-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //Z2
+		-0.45f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //B3
+
+		-0.5f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, //Z2
+		-0.45f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //B3
+		-0.5f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //A3
+
+		-0.35f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //F3
+		-0.35f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //O
+		-0.5f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //E3
+
+		-0.35f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //F3
+		-0.5f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //E3
+		-0.5f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //G3
+
+		-0.5f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //A3
+		-0.5f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //E3
+		-0.55f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //C3
+
+		-0.5f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //E3
+		-0.55f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //C3
+		-0.55f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //D3
+
+	  //CENTRO BORDES
+		-0.3f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, //E1
+		0.3f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, //F1
+		-0.3f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //H1
+
+		0.3f, 0.6f, 0.0f, 0.0f, 0.0f, 0.0f, //F1
+		-0.3f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //H1
+		0.3f, 0.55f, 0.0f, 0.0f, 0.0f, 0.0f, //G1
+
+		-0.3f, -0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //J3
+		-0.3f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //K3
+		0.3f, -0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //I3
+
+		-0.3f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //K3
+		0.3f, -0.05f, 0.0f, 0.0f, 0.0f, 0.0f, //I3
+		0.3f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //H3
+
+		//PATA CENTRAL
+		0.1f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //O3
+		0.15f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //L3
+		0.1f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //N3
+
+		0.15f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //L3
+		0.1f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //N3
+		0.15f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //M3
+
+		-0.1f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //O3
+		-0.15f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //L3
+		-0.1f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //N3
+
+		-0.15f, -0.1f, 0.0f, 0.0f, 0.0f, 0.0f, //L3
+		-0.1f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //N3
+		-0.15f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //M3
+
+		0.15f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //M3
+		0.2f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //P3
+		0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+
+		0.2f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //P3
+		0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+		0.2f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+
+		-0.15f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //M3
+		-0.2f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //P3
+		-0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+
+		-0.2f, -0.15f, 0.0f, 0.0f, 0.0f, 0.0f, //P3
+		-0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+		-0.2f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+
+		-0.15f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //T3
+		-0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //U3
+		0.15f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //S3
+
+		-0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //U3
+		0.15f, -0.2f, 0.0f, 0.0f, 0.0f, 0.0f, //S3
+		0.15f, -0.25f, 0.0f, 0.0f, 0.0f, 0.0f, //R3
+	
+	//Relleno gris
+		-0.3f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //A1
+		-0.3f, 0.6f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //E1
+		0.3f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //L
+
+		-0.3f, 0.6f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //E1
+		0.3f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //L
+		0.3f, 0.6f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //F1
+
+		0.25f, 0.85f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //I
+		0.25f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //M
+		-0.25f, 0.85f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //U1
+
+		0.25f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //M
+		-0.25f, 0.85f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //U1
+		-0.25f, 0.75f, 0.0f, 0.7647f, 0.7529f, 0.7608f, //Z
+
+
+	};
+	unsigned int indices[] = {  // note that we start from 0!
+		0,1,2,3,4,5, //BORDES NEGROS
+		6,7,8,9,10,11, //DERECHO
+		12,13,14,15,16,17,
+		18,19,20,21,22,23,
+		24,25,26,27,28,29,
+		30,31,32,33,34,35,
+		36,37,38,39,40,41,
+		42,43,44,45,46,47,
+		48,49,50,51,52,53,
+		54,55,56,57,58,59,
+		60,61,62,63,64,65,
+		66,67,68,69,70,71,
+		72,73,74,75,76,77,
+		78,79,80,81,82,83,
+		84,85,86,87,88,89,
+		90,91,92,93,94,95,
+		96,97,98,99,100,101,
+		102,103,104,105,106,107,
+		108,109,110,111,112,113,
+		114,115,116,117,118,119,
+		120,121,122,123,124,125,
+		126,127,128,129,130,131,
+		132,133,134,135,136,137,
+		138,139,140,141,142,143,
+		144,145,146,147,148,149,
+		150,151,152,153,154,155,
+		156,157,158,159,160,161,
+		162,163,164,165,166,167,
+		168,169,170,171,172,173,
+		174,175,176,177,178,179,
+		180,181,182,183,184,185,
+		186,187,188,189,190,191,
+		192,193,194,195,196,197,
+		198,199,200,201,202,203,
+		204,205,206,207,208,209,
+		210,211,212,213,214,215,
+		216,217,218,219,220,221,
+		222,223,224,225,226,227,
+		228,229,230,231,232,233,
+		234,235,236,237,238,239,
+		240,241,242,243,244,245,
+		246,247,248,249,250,251,
+	};
+
+
+
+	GLuint VBO, VAO,EBO;
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
+
+	// Enlazar  Vertex Array Object
+	glBindVertexArray(VAO);
+
+	//2.- Copiamos nuestros arreglo de vertices en un buffer de vertices para que OpenGL lo use
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	// 3.Copiamos nuestro arreglo de indices en  un elemento del buffer para que OpenGL lo use
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	// 4. Despues colocamos las caracteristicas de los vertices
+
+	//Posicion
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)0);
+	glEnableVertexAttribArray(0);
+
+	//Color
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(GLfloat), (GLvoid *)(3*sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
+	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs)
+
+
+	
+	while (!glfwWindowShouldClose(window))
+	{
+		// Check if any events have been activiated (key pressed, mouse moved etc.) and call corresponding response functions
+		glfwPollEvents();
+
+		// Render
+		// Clear the colorbuffer
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+
+
+		// Draw our first triangle
+        ourShader.Use();
+        glBindVertexArray(VAO);
+        glDrawElements(GL_TRIANGLES, 300,GL_UNSIGNED_INT,0);
+
+        
+        
+        glBindVertexArray(0);
+    
+		// Swap the screen buffers
+		glfwSwapBuffers(window);
+	}
+
+
+
+	glfwTerminate();
+	return EXIT_SUCCESS;
+}
+
+void resize(GLFWwindow* window, int width, int height)
+{
+	// Set the Viewport to the size of the created window
+	glViewport(0, 0, width, height);
+	//glViewport(0, 0, screenWidth, screenHeight);
+}
